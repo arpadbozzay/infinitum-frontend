@@ -6,6 +6,7 @@ import App from './App'
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import ConfirmRegistration from './pages/ConfirmRegistration';
 import NotFound from './pages/NotFound';
 
 const routing = (
@@ -25,6 +26,7 @@ const routing = (
                 <Route path="/registration" component={Registration} />
                 <Route path="/login" component={Login} />
                 <Route path="/home" component={Home} />
+                <Route path="/confirmregistration" component={ConfirmRegistration} />
                 <Route component={NotFound} />
             </Switch>
         </div>

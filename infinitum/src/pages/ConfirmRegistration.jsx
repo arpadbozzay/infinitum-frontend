@@ -1,7 +1,7 @@
 import React from "react";
 const fetch = require('node-fetch');
 
-class Home extends React.Component {
+class ConfirmRegistration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,4 +18,4 @@ class Home extends React.Component {
         return <h1>Welcome</h1>
     }
 }
-export default Home;
+export default ConfirmRegistration;
