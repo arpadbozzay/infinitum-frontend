@@ -1,5 +1,6 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from 'mdbreact';
+import { login } from "../api/apiCalls";
 
 class Login extends React.Component {
     constructor(props) {
@@ -10,22 +11,11 @@ class Login extends React.Component {
             verificationCode: ""
         }
         this.handleChange = this.handleChange.bind(this);
-        this.login = this.login.bind(this);
+        this.loginHandler = this.loginHandler.bind(this);
     }
 
-    login() {
-        console.log(this.state);
-        fetch('http://localhost:8080/user/login', {
-            method: 'post',
-            body: JSON.stringify(this.state),
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json);
-                localStorage.setItem("jwtToken", json.jwtToken);
-            })
-            .catch(e => console.log(e));
+    loginHandler() {
+        login(this.state);
     }
 
     handleChange(targetState, event) {
@@ -47,7 +37,7 @@ class Login extends React.Component {
                                     value={this.state.verificationCode} onChange={(e) => this.handleChange("verificationCode", e)} />
                             </div>
                             <div className="text-center">
-                                <MDBBtn onClick={this.login}>Login</MDBBtn>
+                                <MDBBtn onClick={this.loginHandler}>Login</MDBBtn>
                             </div>
                         </form>
                     </MDBCol>

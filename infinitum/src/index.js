@@ -1,36 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom'
-import App from './App'
-import Registration from './pages/Registration';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import ConfirmRegistration from './pages/ConfirmRegistration';
-import NotFound from './pages/NotFound';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Routes from "./pages/components/Routes";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-css-only/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
+import rootReducer from "./reducers";
+import { Provider } from 'react-redux'
+import { createStore } from 'redux';
 
-const routing = (
-    <Router>
-        <div>
-            <ul>
-                <li>
-                    <Link to="/registration">Registration</Link>
-                </li>
-                <li>
-                    <Link to="/login">Login</Link>
-                </li>
-            </ul>
-            {/* ProtectedRoutes */}
-            <Switch>
-                <Route exact path="/" component={App} />
-                <Route path="/registration" component={Registration} />
-                <Route path="/login" component={Login} />
-                <Route path="/home" component={Home} />
-                <Route path="/confirmregistration" component={ConfirmRegistration} />
-                <Route component={NotFound} />
-            </Switch>
-        </div>
-    </Router>
-)
+const store = createStore(rootReducer);
 
-ReactDOM.render(routing, document.getElementById('root'));
+ReactDOM.render(
+    <Provider store={store}>
+        <Router>
+            <Routes />
+        </Router>
+    </Provider>
+    , document.getElementById('root'));

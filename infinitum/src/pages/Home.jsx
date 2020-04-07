@@ -1,21 +1,21 @@
-import React from "react";
-const fetch = require('node-fetch');
+import React from 'react';
+import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
 
 class Home extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            users: []
-        }
-        fetch('http://localhost:8080/admin/users',
-            { headers: { "Authorization": `Bearer ${localStorage.getItem("jwtToken")}` } }
-        )
-            .then(res => res.json())
-            .then(json => console.log(json))
-            .catch(e => console.log(e));
-    }
     render() {
-        return <h1>Welcome</h1>
+        return (
+            <div>
+                <ul>
+                    <li>
+                        <Link to="/registration">Registration</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                </ul>
+                {/* ProtectedRoutes */}
+            </div>
+        );
     }
 }
 export default Home;

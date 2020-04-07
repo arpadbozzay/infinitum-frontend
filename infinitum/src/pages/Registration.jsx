@@ -1,7 +1,25 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from 'mdbreact';
+import { connect } from "react-redux";
 
-class Registration extends React.Component {
+function mapStateToProps(state) {
+    return {
+        user: state.rootReducer
+    };
+};
+
+function mapDispatchToProps(dispatch) {
+    return {
+        setUserName: (name) => {
+            dispatch({
+                type: "CHANGE_USER_NAME",
+                payload: name
+            });
+        }
+    };
+};
+
+class ConnectedRegistration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -28,8 +46,9 @@ class Registration extends React.Component {
             .then(res => res.text())
             .then(text => {
                 console.log(text);
-                this.setState({ QRCode: text });
-                //window.location.replace("http://localhost:8080/confirmregistration");
+                localStorage.setItem("username", text);
+                this.props.setName(text);
+                window.location.replace("http://localhost:3000/registrationconfirm");
             })
             .catch(e => console.log(e));
     }
@@ -48,7 +67,7 @@ class Registration extends React.Component {
                             <div className="grey-text">
                                 <MDBInput label="Your name" icon="user" group type="text" validate error="wrong"
                                     success="right" value={this.state.name} onChange={(e) => this.handleChange("name", e)} />
-                                <MDBInput label="Your email" icon="email" group type="text" validate error="wrong"
+                                <MDBInput label="Your email" icon="envelope" group type="text" validate error="wrong"
                                     success="right" value={this.state.email} onChange={(e) => this.handleChange("email", e)} />
                                 <MDBInput label="Your personal id" icon="address-card" group type="text" validate error="wrong"
                                     success="right" value={this.state.personalId} onChange={(e) => this.handleChange("personalId", e)} />
@@ -67,11 +86,14 @@ class Registration extends React.Component {
                         </form>
                     </MDBCol>
                 </MDBRow>
-                <MDBRow>
-                    <img src={this.state.QRCode} />
-                </MDBRow>
             </MDBContainer>
         );
     }
 }
+
+const Registration = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ConnectedRegistration);
+
 export default Registration;
