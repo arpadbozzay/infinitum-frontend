@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
-import Registration from '../Registration';
-import Login from '../Login';
-import ConfirmRegistration from '../ConfirmRegistration';
-import Home from '../Home';
-import NotFound from '../NotFound';
-import Welcome from "../Welcome";
-import Accounts from "../Accounts";
-import Transactions from "../Transactions";
-import Settings from "../Settings";
-import Credits from "../Credits";
-import Debits from "../Debits";
+import Registration from '../../account/Registration';
+import Login from '../../account/Login';
+import ConfirmRegistration from '../../account/ConfirmRegistration';
+import Home from '../../account/Home';
+import NotFound from '../../NotFound';
+import Welcome from "../../business/Welcome";
+import BankAccounts from "../../business/BankAccounts";
+import Transactions from "../../business/Transactions";
+import Settings from "../../business/Settings";
+import Credits from "../../business/Credits";
+import Debits from "../../business/Debits";
 
 class Routes extends Component {
     render() {
@@ -23,7 +23,7 @@ class Routes extends Component {
                 <Route path="/login" component={Login} />
                 <Route path="/registrationconfirm" component={ConfirmRegistration} />
                 <Route path="/home" component={Home} />
-                <Route path="/accounts" component={Accounts} />
+                <Route path="/accounts" component={BankAccounts} />
                 <Route path="/transactions" component={Transactions} />
                 <Route path="/credits" component={Credits} />
                 <Route path="/debits" component={Debits} />

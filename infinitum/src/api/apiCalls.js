@@ -61,3 +61,37 @@ export async function createAccount(accountRequest) {
         window.location.replace("http://localhost:3000/login");
     }
 }
+
+export async function freezeAccount(accountNumber) {
+    const res = await fetch('http://localhost:8080/user/account/freeze', {
+        method: "POST",
+        body: accountNumber,
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        await res.json();
+        window.location.replace("http://localhost:3000/accounts");
+    } else {
+        console.log(await res.text());
+        window.location.replace("http://localhost:3000/login");
+    }
+}
+
+export async function unfreezeAccount(accountNumber) {
+    const res = await fetch('http://localhost:8080/user/account/unfreeze', {
+        method: "POST",
+        body: accountNumber,
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        await res.json();
+        window.location.replace("http://localhost:3000/accounts");
+    } else {
+        console.log(await res.text());
+        window.location.replace("http://localhost:3000/login");
+    }
+}

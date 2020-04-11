@@ -1,6 +1,6 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from 'mdbreact';
-import { login } from "../api/apiCalls";
+import { login } from "../../api/apiCalls";
 
 class Login extends React.Component {
     constructor(props) {
@@ -10,17 +10,28 @@ class Login extends React.Component {
             password: "",
             verificationCode: ""
         }
-        this.handleChange = this.handleChange.bind(this);
-        this.loginHandler = this.loginHandler.bind(this);
     }
 
-    loginHandler() {
+    componentWillMount() {
+        document.addEventListener("keydown", this.handleKeyPress.bind(this));
+    }
+
+    loginHandler = () => {
         login(this.state);
     }
 
-    handleChange(targetState, event) {
+    handleChange = (targetState, event) => {
         this.setState({ [targetState]: event.target.value });
     }
+
+    handleKeyPress = (event) => {
+        var code = event.keyCode || event.which;
+        if (code === 13) {
+            login(this.state);
+        }
+    }
+
+
     render() {
         return (
             <MDBContainer>
@@ -37,7 +48,7 @@ class Login extends React.Component {
                                     value={this.state.verificationCode} onChange={(e) => this.handleChange("verificationCode", e)} />
                             </div>
                             <div className="text-center">
-                                <MDBBtn onClick={this.loginHandler}>Login</MDBBtn>
+                                <MDBBtn onClick={this.loginHandler} >Login</MDBBtn>
                             </div>
                         </form>
                     </MDBCol>

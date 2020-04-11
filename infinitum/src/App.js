@@ -5,7 +5,7 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import Home from "./pages/Home";
 import Welcome from "./pages/Welcome";
-import Routes from "./pages/components/Routes";
+import Routes from "./pages/business/components/Routes";
 
 class App extends Component {
   render() {
