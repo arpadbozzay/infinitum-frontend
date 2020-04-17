@@ -32,11 +32,9 @@ class ConnectedRegistration extends React.Component {
             address: "",
             QRCode: ""
         }
-        this.handleChange = this.handleChange.bind(this);
-        this.registrate = this.registrate.bind(this);
     }
 
-    registrate() {
+    registrate = () => {
         console.log(this.state);
         fetch('http://localhost:8080/user/registration', {
             method: 'post',
@@ -47,13 +45,13 @@ class ConnectedRegistration extends React.Component {
             .then(text => {
                 console.log(text);
                 localStorage.setItem("username", text);
-                this.props.setName(text);
+                this.props.setUserName(text);
                 window.location.replace("http://localhost:3000/registrationconfirm");
             })
             .catch(e => console.log(e));
     }
 
-    handleChange(targetState, event) {
+    handleChange = (targetState, event) => {
         this.setState({ [targetState]: event.target.value });
     }
 

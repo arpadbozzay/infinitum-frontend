@@ -1,4 +1,8 @@
 import fetch from "node-fetch";
+import store from "../store";
+import { toast } from "react-toastify";
+
+const notify = (msg, options) => { toast(msg, options) }
 
 export async function getBankAccounts() {
     const res = await fetch('http://localhost:8080/user/accounts', {
@@ -9,8 +13,7 @@ export async function getBankAccounts() {
     if (res.status === 200) {
         return await res.json();
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
 }
 
@@ -24,11 +27,9 @@ export async function login(userRequest) {
         const json = await res.json();
         localStorage.setItem("jwtToken", json.jwtToken);
         localStorage.setItem("username", json.userName);
-        localStorage.setItem("isAuthenticated", true);
-        window.location.replace("http://localhost:3000/");
+        window.location.replace("http://localhost:3000/accounts");
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
 }
 
@@ -39,8 +40,7 @@ export async function getCurrencies() {
     if (res.status === 200) {
         return await res.json();
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
 }
 
@@ -57,8 +57,7 @@ export async function createAccount(accountRequest) {
         await res.json();
         window.location.replace("http://localhost:3000/accounts");
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
 }
 
@@ -74,8 +73,7 @@ export async function freezeAccount(accountNumber) {
         await res.json();
         window.location.replace("http://localhost:3000/accounts");
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
 }
 
@@ -91,7 +89,119 @@ export async function unfreezeAccount(accountNumber) {
         await res.json();
         window.location.replace("http://localhost:3000/accounts");
     } else {
-        console.log(await res.text());
-        window.location.replace("http://localhost:3000/login");
+        handleError(res);
     }
+}
+
+export async function getTransferHistory() {
+    const res = await fetch('http://localhost:8080/user/account/transfer/history', {
+        method: "POST",
+        body: localStorage.getItem("username"),
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        console.log("faaaaas");
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function searchTransferHistory(searchRequest) {
+    const res = await fetch('http://localhost:8080/user/account/transfer/search', {
+        method: "POST",
+        body: JSON.stringify(searchRequest),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function makeTransaction(transferRequest) {
+    const res = await fetch('http://localhost:8080/user/account/transfer', {
+        method: "POST",
+        body: JSON.stringify(transferRequest),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        await res.json();
+        window.location.replace("http://localhost:3000/transactions");
+    } else {
+        handleError(res);
+    }
+}
+
+export async function getPersonalData() {
+    const res = await fetch('http://localhost:8080/user/personal', {
+        method: "POST",
+        body: localStorage.getItem("username"),
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function updatePersonalData(updatedData) {
+    const res = await fetch('http://localhost:8080/user/personal/update', {
+        method: "POST",
+        body: JSON.stringify(updatedData),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        notify("Data updated", { type: toast.TYPE.SUCCESS });
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function changePassword(passwordRequest) {
+    const res = await fetch('http://localhost:8080/user/personal/password', {
+        method: "POST",
+        body: JSON.stringify(passwordRequest),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        notify("Password successfully changed!", { type: toast.TYPE.SUCCESS });
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+async function handleError(res) {
+    const error = await res.json();
+    if (error.status === 401 || error.status === 403) {
+        notify(error.message, { type: toast.TYPE.ERROR });
+        setTimeout(() => window.location.replace("http://localhost:3000/login"), 2000)
+    } else {
+        notify(error.message, { type: toast.TYPE.ERROR });
+        console.log(error);
+    }
+}
+
+function handleSuccess() {
+    notify("Process successfully finished", { type: toast.TYPE.SUCCESS });
 }

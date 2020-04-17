@@ -18,6 +18,7 @@ class CurrencyDropdown extends Component {
             value: firstVal,
             values: currencies
         });
+        this.props.setCurrency(firstVal);
     }
 
 

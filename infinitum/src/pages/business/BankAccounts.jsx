@@ -4,7 +4,7 @@ import SideNavigation from "./components/SideNavigation";
 import MaterialTable from "material-table";
 import { connect } from "react-redux";
 import { getBankAccounts, freezeAccount, unfreezeAccount } from "../../api/apiCalls";
-import ModalPage from "../builders/BankAccountModal";
+import BankAccountModal from "../builders/BankAccountModal";
 
 function mapStateToProps(state) {
     return {
@@ -77,7 +77,7 @@ class ConnectedAccounts extends React.Component {
                             }
                         ]}
                     />
-                    <ModalPage toggleModal={this.state.toggleModal} />
+                    <BankAccountModal toggleModal={this.state.toggleModal} />
                 </main>
             </div>
         );

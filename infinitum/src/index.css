@@ -185,3 +185,13 @@ code {
 .bankAccountModalCheckboxBox{
   height: 50px;
 }
+
+.react-datepicker-popper {
+  z-index: 1000 !important;
+}
+
+.navbarUsername {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+}

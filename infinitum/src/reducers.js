@@ -1,20 +1,20 @@
 const initialState = {
-    username: "",
-    jwtToken: ""
+    notificationMsg: "",
+    showNotification: false
 };
 
 function rootReducer(state = initialState, action) {
     switch (action.type) {
-        case "CHANGE_USER_NAME":
+        case "CHANGE_NOTIF_MSG":
             state = {
                 ...state,
-                username: action.payload
+                notificationMsg: action.payload
             };
             break;
-        case "CHANGE_JWT_TOKEN":
+        case "SHOW_NOTIF":
             state = {
                 ...state,
-                jwtToken: action.payload
+                showNotification: action.payload
             };
             break;
     }

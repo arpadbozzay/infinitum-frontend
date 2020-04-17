@@ -1,8 +1,14 @@
 import React, { Component } from "react";
-import { MDBListGroup, MDBListGroupItem, MDBIcon } from "mdbreact";
+import { MDBListGroup, MDBListGroupItem, MDBIcon, MDBBtn } from "mdbreact";
 import { NavLink } from "react-router-dom";
 
 class SideNavigation extends Component {
+    logout = () => {
+        localStorage.removeItem("username");
+        localStorage.removeItem("jwtToken");
+        window.location.replace("http://localhost:3000/login");
+    }
+
     render() {
         return (
             <div className="sidebar-fixed position-fixed">
@@ -13,7 +19,7 @@ class SideNavigation extends Component {
                         to="/accounts"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
-                            <MDBIcon icon="tachometer-alt" className="mr-3" />
+                            <MDBIcon icon="wallet" className="mr-3" />
                             Accounts
                         </MDBListGroupItem>
                     </NavLink>
@@ -21,7 +27,7 @@ class SideNavigation extends Component {
                         to="/transactions"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
-                            <MDBIcon icon="tachometer-alt" className="mr-3" />
+                            <MDBIcon icon="exchange-alt" className="mr-3" />
                             Transactions
                         </MDBListGroupItem>
                     </NavLink>
@@ -29,7 +35,7 @@ class SideNavigation extends Component {
                         to="/credits"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
-                            <MDBIcon icon="tachometer-alt" className="mr-3" />
+                            <MDBIcon icon="credit-card" className="mr-3" />
                             Credits
                         </MDBListGroupItem>
                     </NavLink>
@@ -37,7 +43,7 @@ class SideNavigation extends Component {
                         to="/debits"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
-                            <MDBIcon icon="tachometer-alt" className="mr-3" />
+                            <MDBIcon icon="chart-bar" className="mr-3" />
                             Debits
                         </MDBListGroupItem>
                     </NavLink>
@@ -45,10 +51,11 @@ class SideNavigation extends Component {
                         to="/settings"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
-                            <MDBIcon icon="tachometer-alt" className="mr-3" />
+                            <MDBIcon icon="user-cog" className="mr-3" />
                             Settings
                         </MDBListGroupItem>
                     </NavLink>
+                    <MDBBtn onClick={this.logout}>Logout</MDBBtn>
                 </MDBListGroup>
             </div>
         );

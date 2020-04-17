@@ -19,8 +19,8 @@ class BankAccountDropdown extends Component {
             value: firstVal,
             values: bankAccountNumbers
         });
+        this.props.setAccountNumber(firstVal);
     }
-
 
     onClickHandler = event => {
         const value = event.target.innerHTML;
