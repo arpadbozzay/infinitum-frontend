@@ -3,7 +3,7 @@ import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalF
 import CurrencyDropdown from "./CurrencyDropdown";
 import { createAccount } from "../../api/apiCalls";
 
-class ModalPage extends Component {
+class BankAccountModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -72,4 +72,4 @@ class ModalPage extends Component {
     }
 }
 
-export default ModalPage;
+export default BankAccountModal;

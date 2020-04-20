@@ -4,7 +4,6 @@ import SideNavigation from "./components/SideNavigation";
 import { connect } from "react-redux";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from "mdbreact";
 import MaterialTable from 'material-table';
-import BankAccountDropdown from "../builders/BankAccountDropdown";
 import TransactionModal from "../builders/TransactionModal";
 import { getTransferHistory, searchTransferHistory } from "../../api/apiCalls";
 import DatePicker from "react-datepicker";
@@ -116,11 +115,6 @@ class ConnectedTransactions extends React.Component {
                     <MDBContainer>
                         <MDBRow className="text-center">
                             <MDBCol size="12">
-                                {/* <MDBRow >
-                                    <MDBCol size="12">
-                                        <BankAccountDropdown setAccountNumber={this.setAccountNumber} />
-                                    </MDBCol>
-                                </MDBRow> */}
                                 <MDBRow >
                                     <MDBCol size="6">
                                         <MDBInput label="Source account" group type="text" validate error="wrong"

@@ -9,8 +9,8 @@ import Welcome from "./business/Welcome";
 import BankAccounts from "./business/BankAccounts";
 import Transactions from "./business/Transactions";
 import Settings from "./business/Settings";
-import Credits from "./business/Credits";
-import Debits from "./business/Debits";
+import Loans from "./business/Loans";
+import Investments from "./business/Investments";
 
 class Routes extends Component {
     render() {
@@ -25,8 +25,8 @@ class Routes extends Component {
                 <Route path="/home" component={Home} />
                 <Route path="/accounts" component={BankAccounts} />
                 <Route path="/transactions" component={Transactions} />
-                <Route path="/credits" component={Credits} />
-                <Route path="/debits" component={Debits} />
+                <Route path="/loans" component={Loans} />
+                <Route path="/investments" component={Investments} />
                 <Route path="/settings" component={Settings} />
                 <Route component={NotFound} />
             </Switch>

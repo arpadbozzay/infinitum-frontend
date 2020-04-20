@@ -191,6 +191,55 @@ export async function changePassword(passwordRequest) {
     }
 }
 
+export async function calculateLoan(loanRequest) {
+    const res = await fetch('http://localhost:8080/user/account/loan/calculate', {
+        method: "POST",
+        body: JSON.stringify(loanRequest),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function takeLoan(loanRequest) {
+    const res = await fetch('http://localhost:8080/user/account/loan', {
+        method: "POST",
+        body: JSON.stringify(loanRequest),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        notify("Loan taken", { type: toast.TYPE.SUCCESS });
+        setTimeout(() => window.location.replace("http://localhost:3000/loans"), 2000)
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
+export async function getLoans() {
+    const res = await fetch('http://localhost:8080/user/account/loans', {
+        method: "POST",
+        body: localStorage.getItem("username"),
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
+    });
+    if (res.status === 200) {
+        return await res.json();
+    } else {
+        handleError(res);
+    }
+}
+
 async function handleError(res) {
     const error = await res.json();
     if (error.status === 401 || error.status === 403) {

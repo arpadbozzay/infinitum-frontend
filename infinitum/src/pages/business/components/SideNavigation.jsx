@@ -32,19 +32,19 @@ class SideNavigation extends Component {
                         </MDBListGroupItem>
                     </NavLink>
                     <NavLink
-                        to="/credits"
+                        to="/loans"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
                             <MDBIcon icon="credit-card" className="mr-3" />
-                            Credits
+                            Loans
                         </MDBListGroupItem>
                     </NavLink>
                     <NavLink
-                        to="/debits"
+                        to="/investments"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
                             <MDBIcon icon="chart-bar" className="mr-3" />
-                            Debits
+                            Investments
                         </MDBListGroupItem>
                     </NavLink>
                     <NavLink
