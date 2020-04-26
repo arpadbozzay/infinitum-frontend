@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
-import { getCurrencies } from "../../api/apiCalls";
+import { getBankRoles } from "../../../api/apiCalls";
 
-class CurrencyDropdown extends Component {
+class RoleDropdown extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,20 +12,19 @@ class CurrencyDropdown extends Component {
     }
 
     async componentDidMount() {
-        const currencies = await getCurrencies();
-        let firstVal = currencies[0];
+        const roles = await getBankRoles();
+        let firstVal = roles[0];
         this.setState({
             value: firstVal,
-            values: currencies
+            values: roles
         });
-        this.props.setCurrency(firstVal);
+        //this.props.setRole(firstVal);
     }
-
 
     onClickHandler = event => {
         const value = event.target.innerHTML;
         this.setState({ value });
-        this.props.setCurrency(value);
+        //this.props.setRole(value);
     }
 
     render() {
@@ -43,4 +42,4 @@ class CurrencyDropdown extends Component {
         );
     }
 }
-export default CurrencyDropdown;
+export default RoleDropdown;

@@ -1,18 +1,25 @@
 import React from 'react';
-import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { MDBContainer, MDBBtn, MDBRow, MDBCol } from 'mdbreact';
+
 
 class Home extends React.Component {
     render() {
         return (
-            <div>
-                <ul>
-                    <li>
-                        <Link to="/registration">Registration</Link>
-                    </li>
-                    <li>
-                        <Link to="/login">Login</Link>
-                    </li>
-                </ul>
+            <div className="homeContainer">
+                <MDBContainer>
+                    <MDBRow center middle>
+                        <MDBCol className="textAlignCenter" size="3">
+                            <MDBBtn href="/login">Login
+                            </MDBBtn>
+                        </MDBCol>
+                    </MDBRow>
+                    <MDBRow center middle>
+                        <MDBCol className="textAlignCenter" size="3">
+                            <MDBBtn href="/registration">Registration
+                            </MDBBtn>
+                        </MDBCol>
+                    </MDBRow>
+                </MDBContainer>
                 {/* ProtectedRoutes */}
             </div>
         );

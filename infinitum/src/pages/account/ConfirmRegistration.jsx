@@ -1,6 +1,6 @@
 import React from "react";
-import { MDBBtn } from 'mdbreact';
-const fetch = require('node-fetch');
+import { MDBContainer, MDBRow, MDBCol, MDBBtn } from 'mdbreact';
+import { confirmRegistration } from "../../api/apiCalls";
 
 class ConfirmRegistration extends React.Component {
     constructor(props) {
@@ -9,31 +9,35 @@ class ConfirmRegistration extends React.Component {
             QRCode: "",
             username: ""
         }
-        fetch('http://localhost:8080/user/registration/confirm',
-            { method: "POST", body: localStorage.getItem("username") }
-        )
-            .then(res => res.text())
-            .then(text => {
-                console.log(text);
-                this.setState({
-                    QRCode: text
-                });
-            })
-            .catch(e => console.log(e));
     }
 
-    confirm() {
-        window.location.replace("http://localhost:3000/login");
-
+    async componentDidMount() {
+        const regQRCode = await confirmRegistration();
+        this.setState({
+            QRCode: regQRCode
+        });
     }
+
     render() {
         return (
-            <div>
-                <h1>Your QR code</h1>
-                <img src={this.state.QRCode} alt="QR code should be here.." />
-                <h1>Your username</h1>
-                <h3>{localStorage.getItem("username")}</h3>
-                <MDBBtn onClick={this.confirm} color="primary">Okay, I got it</MDBBtn>
+            <div className="homeContainer">
+                <MDBContainer>
+                    <MDBRow center>
+                        <MDBCol className="textAlignCenter" size="4">
+                            <h6>Your QR code</h6>
+                            <img src={this.state.QRCode} alt="QR code should be here.." />
+                        </MDBCol>
+                    </MDBRow>
+                    <MDBRow center>
+                        <MDBCol className="textAlignCenter" size="4">
+                            <h6>Your username</h6>
+                            <h5>{localStorage.getItem("username")}</h5>
+                            <MDBBtn href="/login" color="primary">Okay, I got it</MDBBtn>
+                        </MDBCol>
+                    </MDBRow>
+                </MDBContainer>
+
+
             </div>
         );
     }

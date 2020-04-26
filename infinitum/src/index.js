@@ -9,9 +9,6 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
-import superNotification from "./superNotification";
-
-
 import { Provider } from 'react-redux'
 import store from './store';
 

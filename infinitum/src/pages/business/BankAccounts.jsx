@@ -45,16 +45,18 @@ class ConnectedAccounts extends React.Component {
                 <TopNavigation />
                 <SideNavigation />
                 <main id="content" className="p-5">
-                    <h1>Accounts</h1>
                     <MaterialTable
                         title="Bank accounts"
                         columns={[
-                            { title: 'AccountNumber', field: 'accountNumber', cellStyle: { overflowWrap: "normal" } },
+                            { title: 'AccountNumber', field: 'accountNumber', defaultSort: "asc", cellStyle: { overflowWrap: "normal" } },
                             { title: 'Balance', field: 'balance', type: "numeric" },
                             { title: 'Currency', field: 'currency' },
                             { title: 'Frozen', field: 'frozen', type: "boolean" },
                             { title: 'Created at', field: 'createdAt', type: "datetime" },
                         ]}
+                        options={{
+                            sorting: true
+                        }}
                         data={this.state.bankAccounts}
                         actions={[
                             rowData => ({

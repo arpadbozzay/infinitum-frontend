@@ -8,7 +8,7 @@ class TopNavigation extends Component {
                 <MDBNavbar className="flexible-navbar" light expand="md" scrolling>
                     <MDBNavbarNav center="true">
                         <a href="/">
-                            <h1>Infinitum</h1>
+                            <h1>Infinitum Admin</h1>
                         </a>
                     </MDBNavbarNav>
                     <div className="navbarUsername">

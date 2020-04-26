@@ -1,8 +1,8 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from 'mdbreact';
-import { login, baseUserCall } from "../../api/apiCalls";
+import { adminLogin, baseAdminCall } from "../../api/apiCalls";
 
-class Login extends React.Component {
+class AdminLogin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -10,40 +10,37 @@ class Login extends React.Component {
             errorUsername: false,
             password: "",
             errorPassword: false,
-            verificationCode: "",
-            errorVerificationCode: false
+
         }
     }
 
     async componentDidMount() {
-        await baseUserCall();
+        await baseAdminCall();
     }
 
     componentWillMount() {
         document.addEventListener("keydown", this.handleKeyPress.bind(this));
     }
 
+
     validateFields = () => {
         const errorOnUsername = this.state.username.length === 0 ? true : false;
         const errorOnPassword = this.state.password.length === 0 ? true : false;
-        const errorOnVerificationCode = this.state.verificationCode.length === 0 ? true : false;
         this.setState({
             errorUsername: errorOnUsername,
             errorPassword: errorOnPassword,
-            errorVerificationCode: errorOnVerificationCode
         });
-        if (!errorOnUsername && !errorOnPassword && !errorOnVerificationCode) {
-            this.loginHandler();
+        if (!errorOnUsername && !errorOnPassword) {
+            this.adminLogin();
         }
     }
 
     loginHandler = () => {
         const loginRequest = {
             username: this.state.username,
-            password: this.state.password,
-            verificationCode: this.state.verificationCode
+            password: this.state.password
         }
-        login(loginRequest);
+        adminLogin(loginRequest);
     }
 
     handleChange = (targetState, event) => {
@@ -55,12 +52,12 @@ class Login extends React.Component {
         if (code === 13) {
             const loginRequest = {
                 username: this.state.username,
-                password: this.state.password,
-                verificationCode: this.state.verificationCode
+                password: this.state.password
             }
-            login(loginRequest);
+            adminLogin(loginRequest);
         }
     }
+
 
     render() {
         return (
@@ -70,21 +67,19 @@ class Login extends React.Component {
                         <MDBCol md="6">
                             <p className="h5 text-center mb-4 accountColor">Sign in</p>
                             <div>
-                                <MDBInput label="Type your name" icon="user" className={this.state.errorUsername ? "invalid" : ""} group type="text"
+                                <MDBInput label="Type your name" icon="user" group type="text" className={this.state.errorUsername ? "invalid" : ""}
                                     value={this.state.username} onChange={(e) => this.handleChange("username", e)} />
-                                <MDBInput label="Type your password" className={this.state.errorPassword ? "invalid" : ""} icon="lock" group type="password" validate
+                                <MDBInput label="Type your password" icon="lock" group type="password" className={this.state.errorPassword ? "invalid" : ""}
                                     value={this.state.password} onChange={(e) => this.handleChange("password", e)} />
-                                <MDBInput label="Type your code" icon="code" className={this.state.errorVerificationCode ? "invalid" : ""} group type="text" validate
-                                    value={this.state.verificationCode} onChange={(e) => this.handleChange("verificationCode", e)} />
                             </div>
                             <div className="text-center">
-                                <MDBBtn onClick={this.validateFields} >Login</MDBBtn>
+                                <MDBBtn onClick={this.loginHandler} >Login</MDBBtn>
                             </div>
                         </MDBCol>
                     </MDBRow>
                 </MDBContainer>
-            </div >
+            </div>
         );
     }
 }
-export default Login;
+export default AdminLogin;

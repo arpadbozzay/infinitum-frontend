@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBBox } from 'mdbreact';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput } from 'mdbreact';
 import BankAccountDropdown from "./BankAccountDropdown";
 import CurrencyDropdown from "./CurrencyDropdown";
 import { makeTransaction } from "../../api/apiCalls";
@@ -10,8 +10,11 @@ class ModalPage extends Component {
         this.state = {
             modal: false,
             destination: "",
+            errorDestination: false,
             amount: "",
+            errorAmount: false,
             message: "",
+            errorMessage: false,
             currency: "",
             accountNumber: ""
         }
@@ -20,7 +23,7 @@ class ModalPage extends Component {
     componentDidUpdate(prevProps) {
         if (this.props !== prevProps) {
             this.setState({
-                modal: this.props.toggleTransactionModal
+                modal: this.props.toggleTransactionModalState
             });
         }
     }
@@ -38,9 +41,21 @@ class ModalPage extends Component {
     };
 
     toggle = () => {
+        this.props.toggleModal();
+    }
+
+    validateFields = () => {
+        const errorOnDestination = this.state.destination.length === 0 ? true : false;
+        const errorOnAmount = this.state.amount <= 0 ? true : false;
+        const errorOnMessage = this.state.message.length === 0 ? true : false;
         this.setState({
-            modal: !this.state.modal
+            errorDestination: errorOnDestination,
+            errorAmount: errorOnAmount,
+            errorMessage: errorOnMessage
         });
+        if (!errorOnDestination && !errorOnAmount && !errorOnMessage) {
+            this.transferMoney();
+        }
     }
 
     transferMoney = () => {
@@ -61,23 +76,21 @@ class ModalPage extends Component {
                     <MDBModalHeader toggle={this.toggle}>Bank Account Details</MDBModalHeader>
                     <MDBModalBody>
                         <div >
-                            <h4>Select source account</h4>
-                            <BankAccountDropdown setAccountNumber={this.setAccountNumber} />
+                            <h6>Select source account</h6>
+                            <BankAccountDropdown init={true} setCurrency={this.setCurrency} setAccountNumber={this.setAccountNumber} />
+                            <h6>Currency</h6>
+                            <h6>{this.state.currency}</h6>
                         </div>
-                        <MDBInput label="Type destination account" icon="bullseye" group type="text" validate error="wrong"
-                            success="right" value={this.state.destination} onChange={(e) => this.handleChange("destination", e)} />
-                        <MDBInput label="Type amount" icon="coins" group type="number" validate error="wrong"
-                            success="right" value={this.state.amount} onChange={(e) => this.handleChange("amount", e)} />
-                        <div>
-                            <h4>Select currency</h4>
-                            <CurrencyDropdown setCurrency={this.setCurrency} />
-                        </div>
-                        <MDBInput label="Type your message" icon="comment" group type="text" validate error="wrong"
-                            success="right" value={this.state.message} onChange={(e) => this.handleChange("message", e)} />
+                        <MDBInput label="Type destination account" icon="bullseye" group type="text" className={this.state.errorDestination ? "invalid" : ""}
+                            value={this.state.destination} onChange={(e) => this.handleChange("destination", e)} />
+                        <MDBInput label="Type amount" icon="coins" group type="number" className={this.state.errorAmount ? "invalid" : ""}
+                            value={this.state.amount} onChange={(e) => this.handleChange("amount", e)} />
+                        <MDBInput label="Type your message" icon="comment" group type="text" className={this.state.errorMessage ? "invalid" : ""}
+                            value={this.state.message} onChange={(e) => this.handleChange("message", e)} />
                     </MDBModalBody>
                     <MDBModalFooter>
                         <MDBBtn color="secondary" onClick={this.toggle}>Close</MDBBtn>
-                        <MDBBtn color="primary" onClick={this.transferMoney}>Send money</MDBBtn>
+                        <MDBBtn color="primary" onClick={this.validateFields}>Send money</MDBBtn>
                     </MDBModalFooter>
                 </MDBModal>
             </MDBContainer>

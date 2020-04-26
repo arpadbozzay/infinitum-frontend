@@ -184,6 +184,7 @@ code {
 
 .bankAccountModalCheckboxBox{
   height: 50px;
+  background-color: white;
 }
 
 .react-datepicker-popper {
@@ -194,4 +195,59 @@ code {
   position: absolute;
   right: 1em;
   top: 1em;
+}
+
+.transactionDatePicker {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid black;
+  background-color: #ededee;
+}
+
+.transactionFilterButtons {
+  padding-top: 2em;
+  padding-bottom: 2em;
+}
+
+.homeContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("./assets/infinitum.jpg");
+  background-size: cover;
+}
+
+.textAlignCenter {
+  text-align: center;
+}
+
+.homeContainer .md-form .prefix {
+  color: wheat !important;
+}
+
+.homeContainer .md-form input {
+  color: wheat !important;
+}
+
+.homeContainer .md-form label {
+  color: wheat !important;
+}
+
+.homeContainer .md-form .prefix.active{
+  color: orange !important;
+}
+
+.homeContainer .md-form label.active{
+  color: orange !important;
+}
+
+.homeContainer .md-form input.active{
+  border-bottom: 2px solid orange !important;
+}
+
+.homeContainer .accountColor {
+  color: wheat ;
 }

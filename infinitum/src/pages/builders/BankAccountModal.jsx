@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBBox } from 'mdbreact';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBRow, MDBCol } from 'mdbreact';
 import CurrencyDropdown from "./CurrencyDropdown";
 import { createAccount } from "../../api/apiCalls";
 
@@ -53,21 +53,29 @@ class BankAccountModal extends Component {
                 <MDBModal isOpen={this.state.modal} toggle={this.toggle}>
                     <MDBModalHeader toggle={this.toggle}>Bank Account Details</MDBModalHeader>
                     <MDBModalBody>
-                        <div >
-                            <h4>Select currency</h4>
-                            <CurrencyDropdown setCurrency={this.setCurrency} />
-                        </div>
-                        <h4>Check if you want your account frozen</h4>
-                        <div className="bankAccountModalCheckboxBox">
-                            <MDBInput type="checkbox" value={this.state.isFrozen} onClick={this.changeFrozenState} />
-                        </div>
+                        <MDBRow middle>
+                            <MDBCol size="3" middle>
+                                <h6>Select currency</h6>
+                            </MDBCol>
+                            <MDBCol size="4" middle>
+                                <CurrencyDropdown setCurrency={this.setCurrency} />
+                            </MDBCol>
+                        </MDBRow>
+                        <MDBRow>
+                            <MDBCol size="3" middle>
+                                <h6>Freeze account</h6>
+                            </MDBCol>
+                            <MDBCol size="4" middle>
+                                <input type="checkbox" onClick={this.changeFrozenState} value={!this.state.isFrozen}></input>
+                            </MDBCol>
+                        </MDBRow>
                     </MDBModalBody>
                     <MDBModalFooter>
                         <MDBBtn color="secondary" onClick={this.toggle}>Close</MDBBtn>
                         <MDBBtn color="primary" onClick={this.createBankAccount}>Create new bank account</MDBBtn>
                     </MDBModalFooter>
                 </MDBModal>
-            </MDBContainer>
+            </MDBContainer >
         );
     }
 }

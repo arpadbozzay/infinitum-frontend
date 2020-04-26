@@ -6,13 +6,13 @@ class SideNavigation extends Component {
     logout = () => {
         localStorage.removeItem("username");
         localStorage.removeItem("jwtToken");
-        window.location.replace("http://localhost:3000/login");
+        localStorage.removeItem("userType");
+        window.location.replace("http://localhost:3000/");
     }
 
     render() {
         return (
             <div className="sidebar-fixed position-fixed">
-                <a>logo</a>
                 <MDBListGroup className="list-group-flush">
                     <NavLink
                         exact={true}
@@ -40,11 +40,11 @@ class SideNavigation extends Component {
                         </MDBListGroupItem>
                     </NavLink>
                     <NavLink
-                        to="/investments"
+                        to="/debits"
                         activeClassName="activeClass">
                         <MDBListGroupItem>
                             <MDBIcon icon="chart-bar" className="mr-3" />
-                            Investments
+                            Debits
                         </MDBListGroupItem>
                     </NavLink>
                     <NavLink
