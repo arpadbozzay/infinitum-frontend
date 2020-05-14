@@ -40,7 +40,6 @@ class BankAccountModal extends Component {
 
     createBankAccount = () => {
         const newAccountRequest = {
-            username: localStorage.getItem("username"),
             frozen: this.state.isFrozen,
             currency: this.state.currency
         }

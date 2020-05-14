@@ -20,7 +20,6 @@ class Home extends React.Component {
                         </MDBCol>
                     </MDBRow>
                 </MDBContainer>
-                {/* ProtectedRoutes */}
             </div>
         );
     }

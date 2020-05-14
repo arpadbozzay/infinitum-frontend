@@ -1,30 +1,11 @@
 import React from "react";
-import TopNavigation from "./components/TopNavigation";
-import SideNavigation from "./components/SideNavigation";
+import TopNavigation from "../builders/TopNavigation";
+import SideNavigation from "../builders/SideNavigation";
 import MaterialTable from "material-table";
-import { connect } from "react-redux";
 import { getBankAccounts, freezeAccount, unfreezeAccount } from "../../api/apiCalls";
 import BankAccountModal from "../builders/BankAccountModal";
 
-function mapStateToProps(state) {
-    return {
-        user: state,
-        toggleModal: false
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        setUserName: (name) => {
-            dispatch({
-                type: "CHANGE_USER_NAME",
-                payload: name
-            });
-        }
-    };
-};
-
-class ConnectedAccounts extends React.Component {
+class Accounts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -85,10 +66,5 @@ class ConnectedAccounts extends React.Component {
         );
     }
 }
-
-const Accounts = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ConnectedAccounts);
 
 export default Accounts;

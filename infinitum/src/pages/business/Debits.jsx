@@ -1,6 +1,6 @@
 import React from "react";
-import TopNavigation from "./components/TopNavigation";
-import SideNavigation from "./components/SideNavigation";
+import TopNavigation from "../builders/TopNavigation";
+import SideNavigation from "../builders/SideNavigation";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn } from 'mdbreact';
 import MaterialTable from 'material-table';
 import InvestmentModal from "../builders/InvestmentModal";

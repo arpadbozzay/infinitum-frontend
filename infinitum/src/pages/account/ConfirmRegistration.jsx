@@ -1,6 +1,7 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn } from 'mdbreact';
 import { confirmRegistration } from "../../api/apiCalls";
+import { getCookie } from "../../common";
 
 class ConfirmRegistration extends React.Component {
     constructor(props) {
@@ -31,7 +32,7 @@ class ConfirmRegistration extends React.Component {
                     <MDBRow center>
                         <MDBCol className="textAlignCenter" size="4">
                             <h6>Your username</h6>
-                            <h5>{localStorage.getItem("username")}</h5>
+                            <h5>{getCookie("username")}</h5>
                             <MDBBtn href="/login" color="primary">Okay, I got it</MDBBtn>
                         </MDBCol>
                     </MDBRow>

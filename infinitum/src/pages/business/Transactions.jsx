@@ -1,7 +1,6 @@
 import React from "react";
-import TopNavigation from "./components/TopNavigation";
-import SideNavigation from "./components/SideNavigation";
-import { connect } from "react-redux";
+import TopNavigation from "../builders/TopNavigation";
+import SideNavigation from "../builders/SideNavigation";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput, MDBCollapse } from "mdbreact";
 import MaterialTable from 'material-table';
 import TransactionModal from "../builders/TransactionModal";
@@ -10,25 +9,7 @@ import { getTransferHistory, searchTransferHistory } from "../../api/apiCalls";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
-function mapStateToProps(state) {
-    return {
-        user: state,
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        setUserName: (name) => {
-            dispatch({
-                type: "CHANGE_USER_NAME",
-                payload: name
-            });
-        }
-    };
-};
-
-class ConnectedTransactions extends React.Component {
+class Transactions extends React.Component {
     constructor(props) {
         super(props);
         console.log(this.props.notifications);
@@ -65,7 +46,6 @@ class ConnectedTransactions extends React.Component {
 
     search = async () => {
         const searchRequest = {
-            username: localStorage.getItem("username"),
             source: this.state.source,
             destination: this.state.destination,
             minimum: this.state.minimum,
@@ -126,7 +106,6 @@ class ConnectedTransactions extends React.Component {
                 <TopNavigation />
                 <SideNavigation />
                 <main id="content" className="p-5">
-                    <h2>{this.props.user.username}</h2>
                     <MDBContainer fluid>
                         <MDBRow center>
                             <MDBCol size="6">
@@ -227,10 +206,5 @@ class ConnectedTransactions extends React.Component {
         );
     }
 }
-
-const Transactions = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ConnectedTransactions);
 
 export default Transactions;

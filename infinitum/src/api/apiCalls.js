@@ -1,13 +1,15 @@
 import fetch from "node-fetch";
-import store from "../store";
+import config from "../config/config";
 import { toast } from "react-toastify";
+import { deleteAllCookies, getCookie } from "../common";
 
 const notify = (msg, options) => { toast(msg, options) }
 
 ////// USER ACTIONS //////
 
 export async function baseUserCall() {
-    const res = await fetch('http://localhost:8080/user/base', {
+    const res = await fetch(`${config.backend}/user/base`, {
+        credentials: 'include',
         method: "GET",
     });
     if (res.status === 200) {
@@ -18,24 +20,30 @@ export async function baseUserCall() {
 }
 
 export async function registrate(registrationRequest) {
-    const res = await fetch('http://localhost:8080/user/registration', {
+    const csrfCookie = getCookie("XSRF-TOKEN");
+    const res = await fetch(`${config.backend}/user/base/registration`, {
         method: "POST",
+        credentials: 'include',
         body: JSON.stringify(registrationRequest),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-XSRF-TOKEN': csrfCookie
+        },
     });
     if (res.status === 200) {
-        const username = await res.text();
-        localStorage.setItem("username", username);
-        window.location.replace("http://localhost:3000/registrationconfirm");
+        await res.text();
+        window.location.replace(`${config.frontend}/registrationconfirm`);
     } else {
         handleError(res);
     }
 }
 
 export async function confirmRegistration() {
-    const res = await fetch('http://localhost:8080/user/registration/confirm', {
+    const csrfCookie = getCookie("XSRF-TOKEN");
+    const res = await fetch(`${config.backend}/user/base/registration/confirm`, {
         method: "POST",
-        body: localStorage.getItem("username"),
+        credentials: 'include',
+        headers: { 'X-XSRF-TOKEN': csrfCookie }
     });
     if (res.status === 200) {
         return await res.text();
@@ -46,8 +54,7 @@ export async function confirmRegistration() {
 
 export async function login(userRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    console.log(csrfCookie);
-    const res = await fetch('http://localhost:8080/user/login', {
+    const res = await fetch(`${config.backend}/user/base/login`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(userRequest),
@@ -57,11 +64,8 @@ export async function login(userRequest) {
         },
     });
     if (res.status === 200) {
-        const json = await res.json();
-        localStorage.setItem("jwtToken", json.jwtToken);
-        localStorage.setItem("username", json.username);
-        localStorage.setItem("userType", json.userType);
-        window.location.replace("http://localhost:3000/accounts");
+        await res.text();
+        window.location.replace(`${config.frontend}/accounts`);
     } else {
         handleError(res);
     }
@@ -70,11 +74,12 @@ export async function login(userRequest) {
 //////// ACCOUNT PAGE //////
 
 export async function getBankAccounts() {
-    const res = await fetch(`http://localhost:8080/user/accounts?username=${localStorage.getItem("username")}`, {
+    const res = await fetch(`${config.backend}/user/accounts`, {
+        credentials: 'include',
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         }
     });
     if (res.status === 200) {
@@ -86,10 +91,11 @@ export async function getBankAccounts() {
 
 
 export async function getCurrencies() {
-    const res = await fetch('http://localhost:8080/user/currencies', {
+    const res = await fetch(`${config.backend}/user/currencies`, {
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         }
     });
     if (res.status === 200) {
@@ -101,42 +107,41 @@ export async function getCurrencies() {
 
 export async function createAccount(accountRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/create', {
+    const res = await fetch(`${config.backend}/user/account/create`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(accountRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         await res.json();
-        window.location.replace("http://localhost:3000/accounts");
+        notify("Account created", { type: toast.TYPE.SUCCESS });
+        setTimeout(() => window.location.replace(`${config.frontend}/accounts`), 2000);
     } else {
         handleError(res);
     }
 }
-
-////// TRANSACTION TYPES ////////
-
 export async function freezeAccount(accountNumber) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/freeze', {
+    const res = await fetch(`${config.backend}/user/account/freeze`, {
         method: "POST",
         credentials: 'include',
         body: accountNumber,
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         await res.json();
-        window.location.replace("http://localhost:3000/accounts");
+        notify("Account frozen", { type: toast.TYPE.SUCCESS });
+        setTimeout(() => window.location.replace(`${config.frontend}/accounts`), 2000);
     } else {
         handleError(res);
     }
@@ -144,30 +149,34 @@ export async function freezeAccount(accountNumber) {
 
 export async function unfreezeAccount(accountNumber) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/unfreeze', {
+    const res = await fetch(`${config.backend}/user/account/unfreeze`, {
         method: "POST",
         credentials: 'include',
         body: accountNumber,
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         await res.json();
-        window.location.replace("http://localhost:3000/accounts");
+        notify("Account unfrozen", { type: toast.TYPE.SUCCESS });
+        setTimeout(() => window.location.replace(`${config.frontend}/accounts`), 2000);
     } else {
         handleError(res);
     }
 }
 
+////// TRANSACTION TYPES ////////
+
 export async function getTransferHistory() {
-    const res = await fetch(`http://localhost:8080/user/account/transfer/history?username=${localStorage.getItem("username")}`, {
+    const res = await fetch(`${config.backend}/user/account/transfer/history`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         },
     });
     if (res.status === 200) {
@@ -179,14 +188,14 @@ export async function getTransferHistory() {
 
 export async function searchTransferHistory(searchRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/transfer/search', {
+    const res = await fetch(`${config.backend}/user/account/transfer/search`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(searchRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
@@ -199,21 +208,21 @@ export async function searchTransferHistory(searchRequest) {
 
 export async function makeTransaction(transferRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/transfer', {
+    const res = await fetch(`${config.backend}/user/account/transfer`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(transferRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         await res.json();
         notify("Transaction was successful!", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/transactions"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/transactions`), 2000)
     } else {
         handleError(res);
     }
@@ -222,11 +231,12 @@ export async function makeTransaction(transferRequest) {
 ////// CUSTOMER SETTINGS ///////
 
 export async function getPersonalData() {
-    const res = await fetch(`http://localhost:8080/user/personal?username=${localStorage.getItem("username")}`, {
+    const res = await fetch(`${config.backend}/user/personal`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         },
     });
     if (res.status === 200) {
@@ -238,14 +248,14 @@ export async function getPersonalData() {
 
 export async function updatePersonalData(updatedData) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/personal/update', {
+    const res = await fetch(`${config.backend}/user/personal/update`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(updatedData),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
@@ -259,14 +269,14 @@ export async function updatePersonalData(updatedData) {
 
 export async function changePassword(passwordRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/personal/password', {
+    const res = await fetch(`${config.backend}/user/personal/password`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(passwordRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
@@ -282,14 +292,14 @@ export async function changePassword(passwordRequest) {
 
 export async function calculateLoan(loanRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/calculate', {
+    const res = await fetch(`${config.backend}/user/account/calculate`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(loanRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
@@ -302,20 +312,20 @@ export async function calculateLoan(loanRequest) {
 
 export async function takeLoan(loanRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/loan', {
+    const res = await fetch(`${config.backend}/user/account/loan`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(loanRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         notify("Loan taken", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/loans"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/loans`), 2000)
         return await res.json();
     } else {
         handleError(res);
@@ -323,11 +333,12 @@ export async function takeLoan(loanRequest) {
 }
 
 export async function getLoans() {
-    const res = await fetch(`http://localhost:8080/user/account/loans?username=${localStorage.getItem("username")}`, {
+    const res = await fetch(`${config.backend}/user/account/loans`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         },
     });
     if (res.status === 200) {
@@ -339,20 +350,20 @@ export async function getLoans() {
 
 export async function takeDebit(loanRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/user/account/debit', {
+    const res = await fetch(`${config.backend}/user/account/debit`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(loanRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         },
     });
     if (res.status === 200) {
         notify("Debit taken", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/debits"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/debits`), 2000)
         return await res.json();
     } else {
         handleError(res);
@@ -360,11 +371,12 @@ export async function takeDebit(loanRequest) {
 }
 
 export async function getDebits() {
-    const res = await fetch(`http://localhost:8080/user/account/debits?username=${localStorage.getItem("username")}`, {
+    const res = await fetch(`${config.backend}/user/account/debits`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         },
     });
     if (res.status === 200) {
@@ -377,7 +389,8 @@ export async function getDebits() {
 /////////////////////////////////////// ADMIN /////////////////////////////////
 
 export async function baseAdminCall() {
-    const res = await fetch('http://localhost:8080/admin/base', {
+    const res = await fetch(`${config.backend}/admin/base`, {
+        credentials: 'include',
         method: "GET",
     });
     if (res.status === 200) {
@@ -388,11 +401,12 @@ export async function baseAdminCall() {
 }
 
 export async function getBankRoles() {
-    const res = await fetch('http://localhost:8080/admin/auth/roles', {
+    const res = await fetch(`${config.backend}/admin/auth/roles`, {
+        credentials: 'include',
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         }
     });
     if (res.status === 200) {
@@ -405,7 +419,7 @@ export async function getBankRoles() {
 
 export async function adminLogin(userRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/login', {
+    const res = await fetch(`${config.backend}/admin/base/login`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(userRequest),
@@ -415,22 +429,20 @@ export async function adminLogin(userRequest) {
         },
     });
     if (res.status === 200) {
-        const json = await res.json();
-        localStorage.setItem("jwtToken", json.jwtToken);
-        localStorage.setItem("username", json.username);
-        localStorage.setItem("userType", json.userType);
-        window.location.replace("http://localhost:3000/admin/users");
+        await res.text();
+        window.location.replace(`${config.frontend}/admin/users`);
     } else {
         handleError(res);
     }
 }
 
 export async function getAdminBankAccounts() {
-    const res = await fetch('http://localhost:8080/admin/auth/accounts', {
+    const res = await fetch(`${config.backend}/admin/auth/accounts`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         }
     });
     if (res.status === 200) {
@@ -442,21 +454,21 @@ export async function getAdminBankAccounts() {
 
 export async function deleteBankAccount(accountRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/auth/accounts/delete', {
+    const res = await fetch(`${config.backend}/admin/auth/accounts/delete`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(accountRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         }
     });
     if (res.status === 200) {
         await res.text();
         notify("Account deleted", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/admin/accounts"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/admin/accounts`), 2000)
     } else {
         handleError(res);
     }
@@ -464,32 +476,33 @@ export async function deleteBankAccount(accountRequest) {
 
 export async function updateBankAccount(accountRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/auth/accounts/update', {
+    const res = await fetch(`${config.backend}/admin/auth/accounts/update`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(accountRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         }
     });
     if (res.status === 200) {
         await res.json();
         notify("Account updated", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/admin/accounts"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/admin/accounts`), 2000)
     } else {
         handleError(res);
     }
 }
 
 export async function getAdminUsers() {
-    const res = await fetch('http://localhost:8080/admin/auth/users', {
+    const res = await fetch(`${config.backend}/admin/auth/users`, {
         method: "GET",
+        credentials: 'include',
         headers: {
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username")
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username")
         }
     });
     if (res.status === 200) {
@@ -501,21 +514,21 @@ export async function getAdminUsers() {
 
 export async function deleteUser(userRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/auth/user/delete', {
+    const res = await fetch(`${config.backend}/admin/auth/user/delete`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(userRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         }
     });
     if (res.status === 200) {
         await res.text();
         notify("User deleted", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/admin/users"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/admin/users`), 2000)
     } else {
         handleError(res);
     }
@@ -523,43 +536,46 @@ export async function deleteUser(userRequest) {
 
 export async function updateUser(userRequest) {
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/auth/user/update', {
+    const res = await fetch(`${config.backend}/admin/auth/user/update`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(userRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         }
     });
     if (res.status === 200) {
         await res.json();
         notify("User updated", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/admin/users"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/admin/users`), 2000)
     } else {
         handleError(res);
     }
 }
 
 export async function addUser(userRequest) {
+    if (!userRequest.deleted) {
+        userRequest.deleted = false;
+    }
     const csrfCookie = getCookie("XSRF-TOKEN");
-    const res = await fetch('http://localhost:8080/admin/auth/user/add', {
+    const res = await fetch(`${config.backend}/admin/auth/user/add`, {
         method: "POST",
         credentials: 'include',
         body: JSON.stringify(userRequest),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            "XInifinitumUsername": localStorage.getItem("username"),
+            "Authorization": `Bearer ${getCookie("jwtToken")}`,
+            "XInifinitumUsername": getCookie("username"),
             'X-XSRF-TOKEN': csrfCookie
         }
     });
     if (res.status === 200) {
         await res.json();
         notify("User added", { type: toast.TYPE.SUCCESS });
-        setTimeout(() => window.location.replace("http://localhost:3000/admin/users"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/admin/users`), 2000)
     } else {
         handleError(res);
     }
@@ -568,32 +584,13 @@ export async function addUser(userRequest) {
 
 async function handleError(res) {
     if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem("username");
-        localStorage.removeItem("jwtToken");
-        localStorage.removeItem("userType");
+        deleteAllCookies();
         notify(res.message, { type: toast.TYPE.ERROR });
-        setTimeout(() => window.location.replace("http://localhost:3000/"), 2000)
+        setTimeout(() => window.location.replace(`${config.frontend}/`), 2000)
     }
     const error = await res.json();
     notify(error.message, { type: toast.TYPE.ERROR });
 }
 
-function handleSuccess() {
-    notify("Process successfully finished", { type: toast.TYPE.SUCCESS });
-}
 
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
+

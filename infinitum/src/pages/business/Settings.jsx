@@ -1,8 +1,9 @@
 import React from "react";
-import TopNavigation from "./components/TopNavigation";
-import SideNavigation from "./components/SideNavigation";
+import TopNavigation from "../builders/TopNavigation";
+import SideNavigation from "../builders/SideNavigation";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput, MDBCollapse } from 'mdbreact';
 import { changePassword, getPersonalData, updatePersonalData } from "../../api/apiCalls";
+import { errorBasicFieldMessage, checkBasicField, errorPasswordMatchMessage, validateEmail, errorEmailFieldMessage } from "../../common";
 
 class Settings extends React.Component {
     constructor(props) {
@@ -11,7 +12,7 @@ class Settings extends React.Component {
             name: "",
             errorName: false,
             email: "",
-            errorName: false,
+            errorEmail: false,
             personalId: "",
             errorPersonalId: false,
             birthday: "",
@@ -54,11 +55,11 @@ class Settings extends React.Component {
     }
 
     validateUpdateFields = () => {
-        const errorOnName = this.state.name.length === 0 ? true : false;
-        const errorOnEmail = this.state.email.length === 0 ? true : false;
-        const errorOnPhoneNumber = this.state.phoneNumber.length === 0 ? true : false;
-        const errorOnPersonalId = this.state.personalId.length === 0 ? true : false;
-        const errorOnAddress = this.state.address.length === 0 ? true : false;
+        const errorOnName = checkBasicField(this.state.name, 3, 40);
+        const errorOnEmail = validateEmail(this.state.email);
+        const errorOnPhoneNumber = checkBasicField(this.state.phoneNumber, 3, 40);
+        const errorOnPersonalId = checkBasicField(this.state.personalId, 3, 40);
+        const errorOnAddress = checkBasicField(this.state.address, 3, 40);
         const errorOnBirthday = this.state.birthday.length === 0 ? true : false;
         this.setState({
             errorName: errorOnName,
@@ -82,7 +83,6 @@ class Settings extends React.Component {
             personalId: this.state.personalId,
             address: this.state.address,
             birthday: this.state.birthday,
-            username: localStorage.getItem("username")
         }
         const response = await updatePersonalData(updateRequest);
         this.setState({
@@ -96,9 +96,9 @@ class Settings extends React.Component {
     }
 
     validatePasswordFields = () => {
-        const errorOnOldPassword = this.state.oldPassword.length === 0 ? true : false;
-        const errorOnNewPassword = this.state.newPassword.length === 0 ? true : false;
-        const errorOnConfirmedPassword = this.state.confirmedPassword.length === 0 || this.state.newPassword !== this.state.confirmedPassword ? true : false
+        const errorOnOldPassword = checkBasicField(this.state.oldPassword, 3, 40);
+        const errorOnNewPassword = checkBasicField(this.state.newPassword, 3, 40);
+        const errorOnConfirmedPassword = checkBasicField(this.state.confirmedPassword, 3, 40) || this.state.newPassword !== this.state.confirmedPassword ? true : false
         this.setState({
             errorOldPassword: errorOnOldPassword,
             errorNewPassword: errorOnNewPassword,
@@ -115,7 +115,6 @@ class Settings extends React.Component {
             oldPassword: this.state.oldPassword,
             newPassword: this.state.newPassword,
             confirmedPassword: this.state.confirmedPassword,
-            username: localStorage.getItem("username")
         }
         await changePassword(passwordRequest);
         this.setState({
@@ -151,17 +150,17 @@ class Settings extends React.Component {
                                 <MDBCol md="6">
                                     <div className="grey-text">
                                         <MDBInput label="Your name" icon="user" group type="text" className={this.state.errorName ? "invalid" : ""}
-                                            value={this.state.name} onChange={(e) => this.handleChange("name", e)} />
+                                            value={this.state.name} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("name", e)} />
                                         <MDBInput label="Your email" icon="envelope" group type="text" className={this.state.errorEmail ? "invalid" : ""}
-                                            value={this.state.email} onChange={(e) => this.handleChange("email", e)} />
+                                            value={this.state.email} error={errorEmailFieldMessage} onChange={(e) => this.handleChange("email", e)} />
                                         <MDBInput label="Your personal id" icon="address-card" group type="text" className={this.state.errorPersonalId ? "invalid" : ""}
-                                            value={this.state.personalId} onChange={(e) => this.handleChange("personalId", e)} />
+                                            value={this.state.personalId} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("personalId", e)} />
                                         <MDBInput label="Your birthday" icon="birthday-cake" group type="date" className={this.state.errorBirthday ? "invalid" : ""}
-                                            value={this.state.birthday} onChange={(e) => this.handleChange("birthday", e)} />
+                                            value={this.state.birthday} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("birthday", e)} />
                                         <MDBInput label="Your phoneNumber" icon="mobile-alt" group type="text" className={this.state.errorPhoneNumber ? "invalid" : ""}
-                                            value={this.state.phoneNumber} onChange={(e) => this.handleChange("phoneNumber", e)} />
+                                            value={this.state.phoneNumber} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("phoneNumber", e)} />
                                         <MDBInput label="Your address" icon="location-arrow" group type="text" className={this.state.errorAddress ? "invalid" : ""}
-                                            error="wrong" success="right" value={this.state.address} onChange={(e) => this.handleChange("address", e)} />
+                                            error={errorBasicFieldMessage} value={this.state.address} onChange={(e) => this.handleChange("address", e)} />
                                     </div>
                                     <div className="text-center">
                                         <MDBBtn onClick={this.validateUpdateFields} color="primary">Change</MDBBtn>
@@ -176,11 +175,11 @@ class Settings extends React.Component {
                                 <MDBCol md="6">
                                     <div className="grey-text">
                                         <MDBInput label="Your old password" icon="lock" group type="password" className={this.state.errorOldPassword ? "invalid" : ""}
-                                            value={this.state.oldPassword} onChange={(e) => this.handleChange("oldPassword", e)} />
+                                            value={this.state.oldPassword} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("oldPassword", e)} />
                                         <MDBInput label="Your new password" icon="lock" group type="password" className={this.state.errorNewPassword ? "invalid" : ""}
-                                            value={this.state.newPassword} onChange={(e) => this.handleChange("newPassword", e)} />
+                                            value={this.state.newPassword} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("newPassword", e)} />
                                         <MDBInput label="Your confirmed password" icon="lock" group type="password" className={this.state.errorConfirmedPassword ? "invalid" : ""}
-                                            value={this.state.confirmedPassword} onChange={(e) => this.handleChange("confirmedPassword", e)} />
+                                            value={this.state.confirmedPassword} error={errorPasswordMatchMessage} onChange={(e) => this.handleChange("confirmedPassword", e)} />
                                     </div>
                                     <div className="text-center">
                                         <MDBBtn onClick={this.validatePasswordFields} color="primary">Change</MDBBtn>

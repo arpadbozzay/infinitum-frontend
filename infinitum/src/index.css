@@ -251,3 +251,15 @@ code {
 .homeContainer .accountColor {
   color: wheat ;
 }
+
+.md-form  label{
+  width: 100% !important;
+}
+
+.md-form  label::after{
+  display: none !important;
+}
+
+.md-form  label.active::after{
+  display: block !important;
+}

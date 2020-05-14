@@ -1,6 +1,6 @@
 import React from "react";
-import TopNavigation from "./components/TopNavigation";
-import SideNavigation from "./components/SideNavigation";
+import TopNavigation from "../builders/TopNavigation";
+import SideNavigation from "../builders/SideNavigation";
 import MaterialTable from "material-table";
 import { getAdminBankAccounts, deleteBankAccount, updateBankAccount } from "../../api/apiCalls";
 

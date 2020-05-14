@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { MDBNavbar, MDBNavbarNav } from "mdbreact";
+import { getCookie } from "../../common";
 
 class TopNavigation extends Component {
     render() {
@@ -8,11 +9,11 @@ class TopNavigation extends Component {
                 <MDBNavbar className="flexible-navbar" light expand="md" scrolling>
                     <MDBNavbarNav center="true">
                         <a href="/">
-                            <h1>Infinitum Admin</h1>
+                            <h1>Infinitum</h1>
                         </a>
                     </MDBNavbarNav>
                     <div className="navbarUsername">
-                        <h3>{localStorage.getItem("username")}</h3>
+                        <h3>{getCookie("username")}</h3>
                     </div>
                 </MDBNavbar>
             </div>

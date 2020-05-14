@@ -1,6 +1,7 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBInput, MDBBtn } from 'mdbreact';
 import { adminLogin, baseAdminCall } from "../../api/apiCalls";
+import { checkBasicField, errorBasicFieldMessage } from "../../common";
 
 class AdminLogin extends React.Component {
     constructor(props) {
@@ -24,8 +25,8 @@ class AdminLogin extends React.Component {
 
 
     validateFields = () => {
-        const errorOnUsername = this.state.username.length === 0 ? true : false;
-        const errorOnPassword = this.state.password.length === 0 ? true : false;
+        const errorOnUsername = checkBasicField(this.state.username, 3, 40);
+        const errorOnPassword = checkBasicField(this.state.password, 3, 40);
         this.setState({
             errorUsername: errorOnUsername,
             errorPassword: errorOnPassword,
@@ -68,9 +69,9 @@ class AdminLogin extends React.Component {
                             <p className="h5 text-center mb-4 accountColor">Sign in</p>
                             <div>
                                 <MDBInput label="Type your name" icon="user" group type="text" className={this.state.errorUsername ? "invalid" : ""}
-                                    value={this.state.username} onChange={(e) => this.handleChange("username", e)} />
+                                    value={this.state.username} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("username", e)} />
                                 <MDBInput label="Type your password" icon="lock" group type="password" className={this.state.errorPassword ? "invalid" : ""}
-                                    value={this.state.password} onChange={(e) => this.handleChange("password", e)} />
+                                    value={this.state.password} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("password", e)} />
                             </div>
                             <div className="text-center">
                                 <MDBBtn onClick={this.loginHandler} >Login</MDBBtn>

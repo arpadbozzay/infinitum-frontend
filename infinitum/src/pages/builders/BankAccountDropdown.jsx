@@ -13,7 +13,7 @@ class BankAccountDropdown extends Component {
 
     async componentDidMount() {
         const bankAccounts = await getBankAccounts();
-        let firstVal = bankAccounts[0];
+        let firstVal = bankAccounts.length > 0 ? bankAccounts[0] : "";
         this.setState({
             value: this.props.init ? firstVal.accountNumber : "",
             values: bankAccounts

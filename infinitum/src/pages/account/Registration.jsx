@@ -1,26 +1,9 @@
 import React from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from 'mdbreact';
-import { connect } from "react-redux";
-import { registrate } from "../../api/apiCalls";
+import { registrate, baseUserCall } from "../../api/apiCalls";
+import { errorBasicFieldMessage, errorPasswordMatchMessage, checkBasicField, validateEmail, errorEmailFieldMessage } from "../../common";
 
-function mapStateToProps(state) {
-    return {
-        user: state.rootReducer
-    };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        setUserName: (name) => {
-            dispatch({
-                type: "CHANGE_USER_NAME",
-                payload: name
-            });
-        }
-    };
-};
-
-class ConnectedRegistration extends React.Component {
+class Registration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -43,15 +26,19 @@ class ConnectedRegistration extends React.Component {
         }
     }
 
+    async componentDidMount() {
+        await baseUserCall();
+    }
+
     validateFields = () => {
-        const errorOnName = this.state.name.length === 0 ? true : false;
-        const errorOnEmail = this.state.email.length === 0 ? true : false;
-        const errorOnPhoneNumber = this.state.phoneNumber.length === 0 ? true : false;
-        const errorOnPersonalId = this.state.personalId.length === 0 ? true : false;
-        const errorOnAddress = this.state.address.length === 0 ? true : false;
-        const errorOnBirthday = this.state.birthday.length === 0 ? true : false;
-        const errorOnPassword = this.state.password.length === 0 ? true : false;
-        const errorOnConfirmedPassword = this.state.confirmPassword.length === 0 || this.state.password !== this.state.confirmPassword ? true : false
+        const errorOnName = checkBasicField(this.state.name, 3, 40);
+        const errorOnEmail = validateEmail(this.state.email);
+        const errorOnPhoneNumber = checkBasicField(this.state.phoneNumber, 3, 40);
+        const errorOnPersonalId = checkBasicField(this.state.personalId, 3, 40);
+        const errorOnAddress = checkBasicField(this.state.address, 3, 40);
+        const errorOnBirthday = this.state.birthday.length === 0;
+        const errorOnPassword = checkBasicField(this.state.password, 3, 40);
+        const errorOnConfirmedPassword = checkBasicField(this.state.confirmPassword, 3, 40) || this.state.password !== this.state.confirmPassword ? true : false;
         this.setState({
             errorName: errorOnName,
             errorEmail: errorOnEmail,
@@ -96,21 +83,21 @@ class ConnectedRegistration extends React.Component {
                             <p className="h5 text-center accountColor mb-4">Sign up</p>
                             <div>
                                 <MDBInput label="Your name" icon="user" group type="text" className={this.state.errorName ? "invalid" : ""}
-                                    value={this.state.name} onChange={(e) => this.handleChange("name", e)} />
+                                    value={this.state.name} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("name", e)} />
                                 <MDBInput label="Your email" icon="envelope" group type="text" className={this.state.errorEmail ? "invalid" : ""}
-                                    value={this.state.email} onChange={(e) => this.handleChange("email", e)} />
+                                    value={this.state.email} error={errorEmailFieldMessage} onChange={(e) => this.handleChange("email", e)} />
                                 <MDBInput label="Your personal id" icon="address-card" group type="text" className={this.state.errorPersonalId ? "invalid" : ""}
-                                    value={this.state.personalId} onChange={(e) => this.handleChange("personalId", e)} />
+                                    value={this.state.personalId} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("personalId", e)} />
                                 <MDBInput label="Your birthday" icon="birthday-cake" group type="date" className={this.state.errorBirthday ? "invalid" : ""}
-                                    value={this.state.birthday} onChange={(e) => this.handleChange("birthday", e)} />
+                                    value={this.state.birthday} error="Birthday field is required!" onChange={(e) => this.handleChange("birthday", e)} />
                                 <MDBInput label="Your password" icon="lock" type="password" className={this.state.errorPassword ? "invalid" : ""}
-                                    value={this.state.password} onChange={(e) => this.handleChange("password", e)} />
+                                    value={this.state.password} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("password", e)} />
                                 <MDBInput label="Your confirm password" icon="lock" type="password" className={this.state.errorConfirmPassword ? "invalid" : ""}
-                                    value={this.state.confirmPassword} onChange={(e) => this.handleChange("confirmPassword", e)} />
+                                    value={this.state.confirmPassword} error={errorPasswordMatchMessage} onChange={(e) => this.handleChange("confirmPassword", e)} />
                                 <MDBInput label="Your phoneNumber" icon="mobile-alt" group type="text" className={this.state.errorPhoneNumber ? "invalid" : ""}
-                                    value={this.state.phoneNumber} onChange={(e) => this.handleChange("phoneNumber", e)} />
+                                    value={this.state.phoneNumber} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("phoneNumber", e)} />
                                 <MDBInput label="Your address" icon="location-arrow" group type="text" className={this.state.errorAddress ? "invalid" : ""}
-                                    value={this.state.address} onChange={(e) => this.handleChange("address", e)} />
+                                    value={this.state.address} error={errorBasicFieldMessage} onChange={(e) => this.handleChange("address", e)} />
                             </div>
                             <div className="text-center">
                                 <MDBBtn onClick={this.validateFields} color="primary">Register</MDBBtn>
@@ -122,10 +109,5 @@ class ConnectedRegistration extends React.Component {
         );
     }
 }
-
-const Registration = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ConnectedRegistration);
 
 export default Registration;

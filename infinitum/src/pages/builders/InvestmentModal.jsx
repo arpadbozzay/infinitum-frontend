@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBCardText } from 'mdbreact';
 import BankAccountDropdown from "./BankAccountDropdown";
 import { calculateLoan, takeLoan, takeDebit } from "../../api/apiCalls";
+import { validateNumber } from "../../common";
 
 class InvestmentModal extends Component {
     constructor(props) {
@@ -48,8 +49,8 @@ class InvestmentModal extends Component {
     }
 
     validateFields = (type) => {
-        const errorOnAmount = this.state.amount === "" || JSON.parse(this.state.amount) <= 0 ? true : false;
-        const errorOnDuration = this.state.duration === "" || JSON.parse(this.state.duration) <= 0 ? true : false;
+        const errorOnAmount = validateNumber(this.state.amount, 1, 10000000);
+        const errorOnDuration = validateNumber(this.state.duration, 1, 10);
         this.setState({
             errorAmount: errorOnAmount,
             errorDuration: errorOnDuration,
@@ -84,15 +85,14 @@ class InvestmentModal extends Component {
 
     takeLoan = async () => {
         const loanRequest = {
-            username: localStorage.getItem("username"),
             accountNumber: this.state.accountNumber,
             amount: this.state.amount,
             duration: this.state.duration,
             interest: this.state.interest
         }
-        if (this.props.investmentType === "loan") {
+        if (this.props.investmentType === "loan" && this.state.accountNumber) {
             await takeLoan(loanRequest);
-        } else if (this.props.investmentType === "debit") {
+        } else if (this.props.investmentType === "debit" && this.state.accountNumber) {
             await takeDebit(loanRequest);
         }
         this.toggle();
@@ -103,7 +103,7 @@ class InvestmentModal extends Component {
         return (
             <MDBContainer>
                 <MDBModal isOpen={this.state.modal} toggle={this.toggle}>
-                    <MDBModalHeader toggle={this.toggle}>Bank Account Details</MDBModalHeader>
+                    <MDBModalHeader toggle={this.toggle}>Investment Details</MDBModalHeader>
                     <MDBModalBody>
                         <div >
                             <h6>Select source account</h6>
@@ -112,9 +112,9 @@ class InvestmentModal extends Component {
                             <h6>{this.state.currency}</h6>
                         </div>
                         <MDBInput label="Amount" icon="dollar-sign" group type="number" className={this.state.errorAmount ? "invalid" : ""}
-                            value={this.state.amount} onChange={(e) => this.handleChange("amount", e)} />
+                            value={this.state.amount} error="Field must be a valid number between 0 and 10.000.000!" onChange={(e) => this.handleChange("amount", e)} />
                         <MDBInput label="Duration" icon="clock" group type="number" className={this.state.errorDuration ? "invalid" : ""}
-                            value={this.state.duration} onChange={(e) => this.handleChange("duration", e)} />
+                            value={this.state.duration} error="Field must be a valid number between 0 and 10!" onChange={(e) => this.handleChange("duration", e)} />
                         <MDBContainer>
                             <MDBRow>
                                 <MDBCol>
@@ -143,7 +143,7 @@ class InvestmentModal extends Component {
                     <MDBModalFooter>
                         <MDBBtn color="secondary" onClick={this.validateForCalculation}>Calculate</MDBBtn>
                         <MDBBtn color="secondary" onClick={this.toggle}>Close</MDBBtn>
-                        <MDBBtn color="primary" onClick={this.validateForInvestment}>{getInvestmentButtonText}</MDBBtn>
+                        <MDBBtn color="primary" disabled={!this.state.calculatedAmount} onClick={this.validateForInvestment}>{getInvestmentButtonText}</MDBBtn>
                     </MDBModalFooter>
                 </MDBModal>
             </MDBContainer>
